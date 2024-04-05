@@ -1,0 +1,14 @@
+# Images
+imgs/
+# Data base
+db/
+# Logging files
+logging/
+# Python
+.idea
+venv/
+**/__pycache__
+**/*.pyc
+CollectionOfFilms_backup/
+# Envs
+.env
