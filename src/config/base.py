@@ -21,7 +21,7 @@ NAME_TABLE_FILMS = "films"
 head_films = {
     "Название": None,
     "Кино/Сериал": ("Кино", "Сериал"),
-    "Жанр": ("Комедия", "Ужасы", "Драма", "Мелодрама","Триллер", "Приключения", "Боевик", "Фантастика"),
+    "Жанр": ("Комедия", "Ужасы", "Драма", "Мелодрама", "Триллер", "Приключения", "Боевик", "Фантастика"),
     "Просмотр": ("Просмотрено", "Непросмотрено"),
     "ID": None,
 }
@@ -32,15 +32,11 @@ class SettingsApplication:
     """ Настройки окна приложения """
     title: str = "Collection of films"  # название окна приложения
     width: int = 1000  # ширина окна приложения
-    height_min: int = 500  # минимальная высота окна приложения
-    height_max: int = 500  # максимальная высота окна приложения
+    height_min: int = 700  # минимальная высота окна приложения
+    height_max: int = 1000  # максимальная высота окна приложения
     height_widgets: int = 50  # высота компонентов в приложении
-    margin: int = 10  # внутренняя рамка для окна приложения
+    margin: int = 30  # внутренняя рамка для окна приложения
     max_len_field: int = 100  # максимальная длина строки в поле
-
-    def size_widgets(self) -> tuple[int, int]:
-        """ Размер виджета внутри приложения. """
-        return self.width - self.margin, self.height_widgets
 
 
 @dataclass(slots=True, frozen=True)
@@ -62,7 +58,7 @@ class Query:
     INSERT_FILM = f"INSERT INTO {NAME_TABLE_FILMS} (id, name, movie_or_series, genre, view) " \
                   f"VALUES (?, ?, ?, ?, ?);"
     SELECT_ALL_FILMS = f"SELECT name, movie_or_series, genre, view, id FROM {NAME_TABLE_FILMS};"
-    UPDATE_FILM = f"UPDATE {NAME_TABLE_FILMS} (name, movie_or_series, genre, view)=(?, ?, ?, ?) WHERE id=?"
+    UPDATE_FILM = f"UPDATE {NAME_TABLE_FILMS} SET name=?, movie_or_series=?, genre=?, view=? WHERE id=?;"
 
 
 @dataclass(slots=True, frozen=True)
@@ -71,7 +67,7 @@ class FontStyle:
     CORBEL = "Corbel"
     SIZE_1 = 1
     SIZE_5 = 5
-    SIZE_20 = 20
+    SIZE_20 = 25
 
 
 @dataclass(slots=True, frozen=True)

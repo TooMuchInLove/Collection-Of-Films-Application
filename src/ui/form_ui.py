@@ -49,11 +49,11 @@ class UiMainWidget(UiWidget):
         # sapp.width-10, sapp.height_widgets*2))
         # self.lbNotification.setVisible(False)
 
-    def createTable(self, _head: list, _data: list) -> None:
+    def createTable(self, head: list, data: list) -> None:
         """ Создание таблицы """
-        self.table.setColumnCount(len(_head))
-        self.table.setHorizontalHeaderLabels(_head)
-        for i, rows in enumerate(_data):
+        self.table.setColumnCount(len(head))
+        self.table.setHorizontalHeaderLabels(head)
+        for i, rows in enumerate(data):
             self.table.setRowCount(i+1)
             for j, value in enumerate(rows):
                 item = QTableWidgetItem(str(value))
@@ -66,57 +66,47 @@ class UiPopupForm(UiWidget):
     """ Набор визуальных компонентов всплывающего окна """
     def __init__(self) -> None:
         super().__init__()
-        # self.count_widgets = len(head_films.keys())  # Кол-во виджетов
-        count_widgets = len(head_films.keys())  # Кол-во виджетов
-        self.setMinimumSize(QSize(int(sapp.width/2), (sapp.height_widgets+sapp.margin)*count_widgets))
-        self.setMaximumSize(QSize(int(sapp.width/2), (sapp.height_widgets+sapp.margin)*count_widgets))
+        count_widgets = len(head_films.keys())
+        self.setMinimumSize(QSize(int(sapp.width/1.5), (sapp.height_widgets+sapp.margin)*count_widgets))
+        self.setMaximumSize(QSize(int(sapp.width/1.5), (sapp.height_widgets+sapp.margin)*count_widgets))
         self.pbOk = PushButton(sapp.height_widgets, sapp.height_widgets, icon=iapp.icon_save)
         self.pbCancel = PushButton(sapp.height_widgets, sapp.height_widgets, icon=iapp.icon_close)
         self.gridlayout = QGridLayout(self)  # Разметка виджетов приложения
 
-    def addWidgetsForForm(self, _data: tuple=None) -> None:
+    def addWidgets(self, data: tuple = None) -> None:
         """ Добавление виджетов на форму """
         head = list(head_films.keys())
         le = QLineEdit()
-        le.setText(_data[0] if _data else "")
+        le.setText(data[0] if data else "")
         le.setPlaceholderText(head[0])
         le.setMinimumSize(QSize(0, sapp.height_widgets))
         for index, item in enumerate(head):
             films = head_films.get(item)
-            if films is None: continue
+            if films is None:
+                continue
             combobox = QComboBox()
             combobox.addItems(films)
-            combobox.setCurrentIndex(films.index(_data[index]) if _data else 0)
+            combobox.setCurrentIndex(films.index(data[index]) if data else 0)
             combobox.setMinimumSize(QSize(0, sapp.height_widgets))
             self.gridlayout.addWidget(combobox, index, 0, 1, 2)
         self.gridlayout.addWidget(le, 0, 0, 1, 2)
         self.gridlayout.addWidget(self.pbOk, index, 0, alignment=Qt.AlignLeft | Qt.AlignBottom)
         self.gridlayout.addWidget(self.pbCancel, index, 1, alignment=Qt.AlignRight | Qt.AlignBottom)
 
-    # def getDataFromWidgets(self) -> None:
-    #     pass
-
-    # def getCountWidgets(self) -> int:
-    #     return self.coun
-
 
 class UiFormAdd(UiPopupForm):
     """ Форма для добавления данных """
     def __init__(self) -> None:
         super().__init__()
-        self.setWindowTitle(WN.FORM_ADD)  # Название окна
-        # self.setMinimumSize(QSize(int(sapp.width/2), (sapp.height_widgets+sapp.margin)*self.count_widgets))
-        # self.setMaximumSize(QSize(int(sapp.width/2), (sapp.height_widgets+sapp.margin)*self.count_widgets))
-        self.addWidgetsForForm()
+        self.setWindowTitle(WN.FORM_ADD)
+        self.addWidgets()
 
 
 class UiFormEdit(UiPopupForm):
     """ Форма для редактирования данных """
     def __init__(self) -> None:
         super().__init__()
-        self.setWindowTitle(WN.FORM_EDIT)  # Название окна
-        # self.setMinimumSize(QSize(int(sapp.width/2), (sapp.height_widgets+sapp.margin)*self.count_widgets))
-        # self.setMaximumSize(QSize(int(sapp.width/2), (sapp.height_widgets+sapp.margin)*self.count_widgets))
+        self.setWindowTitle(WN.FORM_EDIT)
 
 
 class UiNotification(QLabel):

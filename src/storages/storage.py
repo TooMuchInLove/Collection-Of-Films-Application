@@ -36,7 +36,7 @@ class SQLite3DataBase(IStorageSQL, Singleton):
         self.create_table()
 
     def connect(self) -> None:
-        """ Подключение к базе. """
+        """ Подключение к базе """
         try:
             self.connection = sql_connect(DB_PATH)
             self.cursor = self.connection.cursor()
@@ -44,24 +44,23 @@ class SQLite3DataBase(IStorageSQL, Singleton):
             print(error)
 
     def create_table(self) -> None:
-        """ Создание таблицы. """
+        """ Создание таблицы """
         self.cursor.execute(Q.CREATE_TABLE_FILMS)
         self.connection.commit()
 
     def save(self, data: list) -> None:
-        """ Сохранение данных в БД. """
+        """ Сохранение данных в БД """
         self.cursor.execute(Q.INSERT_FILM, (data,))
         self.connection.commit()
 
     def read(self) -> list:
-        """ Чтение данных из БД. """
+        """ Чтение данных из БД """
         self.cursor.execute(Q.SELECT_ALL_FILMS)
         return [item for item in self.cursor.fetchall()]
 
     def update(self, data: list) -> None:
-        """ Обновляем данные в БД. """
-        # UPDATE films SET name=?, mors=?, janr=?, flag=? WHERE id=?
-        self.cursor.execute(Q.UPDATE_FILM, (data[1:], data[0],))
+        """ Обновляем данные в БД """
+        self.cursor.execute(Q.UPDATE_FILM, (data,))
         self.connection.commit()
 
     def __del__(self) -> None:
