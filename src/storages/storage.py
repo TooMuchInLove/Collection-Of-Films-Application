@@ -48,9 +48,16 @@ class SQLite3DataBase(IStorageSQL, Singleton):
         self.cursor.execute(Q.CREATE_TABLE_FILMS)
         self.connection.commit()
 
+    def get_id(self) -> int:
+        self.cursor.execute(Q.GET_MAX_ID)
+        uuid = self.cursor.fetchone()
+        if uuid is None:
+            return 1
+        return uuid[0] + 1
+
     def save(self, data: list) -> None:
         """ Сохранение данных в БД """
-        self.cursor.execute(Q.INSERT_FILM, (data,))
+        self.cursor.execute(Q.INSERT_FILM % (*data,))
         self.connection.commit()
 
     def read(self) -> list:
@@ -60,7 +67,7 @@ class SQLite3DataBase(IStorageSQL, Singleton):
 
     def update(self, data: list) -> None:
         """ Обновляем данные в БД """
-        self.cursor.execute(Q.UPDATE_FILM, (data,))
+        self.cursor.execute(Q.UPDATE_FILM % (*data,))
         self.connection.commit()
 
     def __del__(self) -> None:

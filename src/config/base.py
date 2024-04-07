@@ -1,11 +1,6 @@
 from os import path as os_path
 from dataclasses import dataclass
 
-# Задержка для всплывающего сообщения
-TIMEOUT = 1500
-# Кодирование
-ENCODING_UTF8 = "utf-8"
-
 BACKSLASH_OS_WINDOWS = "\\"
 # Текущая и основная рабочая директория
 CURRENT_PATH = os_path.dirname(__file__)
@@ -56,9 +51,10 @@ class Query:
     CREATE_TABLE_FILMS = f"CREATE TABLE IF NOT EXISTS {NAME_TABLE_FILMS} " \
                          f"(id INTEGER PRIMARY KEY, name TEXT, movie_or_series TEXT, genre TEXT, view TEXT);"
     INSERT_FILM = f"INSERT INTO {NAME_TABLE_FILMS} (id, name, movie_or_series, genre, view) " \
-                  f"VALUES (?, ?, ?, ?, ?);"
+                  f"VALUES (%s, '%s', '%s', '%s', '%s');"
     SELECT_ALL_FILMS = f"SELECT name, movie_or_series, genre, view, id FROM {NAME_TABLE_FILMS};"
-    UPDATE_FILM = f"UPDATE {NAME_TABLE_FILMS} SET name=?, movie_or_series=?, genre=?, view=? WHERE id=?;"
+    UPDATE_FILM = f"UPDATE {NAME_TABLE_FILMS} SET name='%s', movie_or_series='%s', genre='%s', view='%s' WHERE id=%s;"
+    GET_MAX_ID = f"SELECT COUNT(*) FROM {NAME_TABLE_FILMS};"
 
 
 @dataclass(slots=True, frozen=True)
