@@ -37,7 +37,6 @@ class SettingsApplication:
 @dataclass(slots=True, frozen=True)
 class ImagesApplication:
     """ Различные лого и иконки для приложения и виджетов """
-    # logo: str = ""
     icon_save = f"{IMAGES_PATH}/save.png"
     icon_add = f"{IMAGES_PATH}/add.png"
     icon_view = f"{IMAGES_PATH}/view.png"
