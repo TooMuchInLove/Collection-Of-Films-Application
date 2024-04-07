@@ -3,8 +3,8 @@ from PyQt5.QtCore import Qt, QSize, QRect, QTimer
 from PyQt5.QtWidgets import (QApplication, QWidget, QGridLayout, QLabel, QLineEdit, QComboBox,
                              QPushButton, QTableWidget, QTableWidgetItem, QAbstractItemView)
 from src.ui import LIGHT_THEME
-from src.config import (settings_app as sapp, images_app as iapp,
-                        head_films, WidgetName as WN)
+from src.storages import ContainerWidget
+from src.config import settings_app as sapp, images_app as iapp, head_films, WidgetName as WN
 
 
 class UiWindow(QApplication):
@@ -25,10 +25,10 @@ class UiMainWidget(UiWidget):
     """ Набор визуальных компонентов главного окна """
     def __init__(self) -> None:
         super().__init__()
+        # self.Timer = QTimer()
         self.setMinimumSize(QSize(sapp.width, sapp.height_min))
         self.setMaximumSize(QSize(sapp.width, sapp.height_max))
         self.setWindowTitle(WN.TITLE)
-        # self.Timer = QTimer()
         self.__setup_ui()
 
     def __setup_ui(self) -> None:
@@ -45,21 +45,33 @@ class UiMainWidget(UiWidget):
         self.gridlayout.addWidget(self.pbView, 1, 2, alignment=Qt.AlignLeft | Qt.AlignTop)
         self.gridlayout.addWidget(self.table, 0, 0, 1, 3)
         # self.lbNotification = QLabel(self)  # Лэйбл для отображения ошибок или уведомлений
-        # self.lbNotification.setGeometry(QRect(5, sapp.height_min-(sapp.height_widgets*2+5),
-        # sapp.width-10, sapp.height_widgets*2))
+        # self.lbNotification.setGeometry(QRect(5, sapp.height_min-(sapp.height_widgets*2+5), sapp.width-10, sapp.height_widgets*2))
         # self.lbNotification.setVisible(False)
 
-    def createTable(self, head: list, data: list) -> None:
+    def createTable(self, head: tuple | list, data: tuple | list) -> None:
         """ Создание таблицы """
         self.table.setColumnCount(len(head))
         self.table.setHorizontalHeaderLabels(head)
-        for i, rows in enumerate(data):
-            self.table.setRowCount(i+1)
-            for j, value in enumerate(rows):
-                item = QTableWidgetItem(str(value))
-                self.table.setItem(i, j, item)
-                if j == 0:
-                    item.setTextAlignment(Qt.AlignRight)
+        for row, rows in enumerate(data):
+            self.table.setRowCount(row+1)
+            self.createRow(row, rows)
+
+    def insertRowInTable(self, row: int, data: tuple | list) -> None:
+        """ Добавление одной записи в таблицу """
+        self.table.setRowCount(row+1)
+        self.createRow(row, data)
+
+    def updateRowInTable(self, row: int, data: tuple | list) -> None:
+        """ Обновление одной записи в таблице """
+        self.createRow(row, data)
+
+    def createRow(self, row: int, data: tuple | list) -> None:
+        """ Создание одной записи в таблице """
+        for column, value in enumerate(data):
+            item = QTableWidgetItem(str(value))
+            self.table.setItem(row, column, item)
+            if column == 0:
+                item.setTextAlignment(Qt.AlignRight)
 
 
 class UiPopupForm(UiWidget):
@@ -67,31 +79,38 @@ class UiPopupForm(UiWidget):
     def __init__(self) -> None:
         super().__init__()
         count_widgets = len(head_films.keys())
+        self.__widgets: list[ContainerWidget | None] = [None] * count_widgets
         self.setMinimumSize(QSize(int(sapp.width/1.5), (sapp.height_widgets+sapp.margin)*count_widgets))
         self.setMaximumSize(QSize(int(sapp.width/1.5), (sapp.height_widgets+sapp.margin)*count_widgets))
         self.pbOk = PushButton(sapp.height_widgets, sapp.height_widgets, icon=iapp.icon_save)
         self.pbCancel = PushButton(sapp.height_widgets, sapp.height_widgets, icon=iapp.icon_close)
         self.gridlayout = QGridLayout(self)  # Разметка виджетов приложения
 
-    def addWidgets(self, data: tuple = None) -> None:
+    def createWidgets(self, data: tuple | list = None) -> None:
         """ Добавление виджетов на форму """
         head = list(head_films.keys())
-        le = QLineEdit()
-        le.setText(data[0] if data else "")
-        le.setPlaceholderText(head[0])
-        le.setMinimumSize(QSize(0, sapp.height_widgets))
+        lineedit = LineEdit(0, sapp.height_widgets, data[0] if data else "", head[0])
+        self.__widgets[0] = ContainerWidget(obj=lineedit, tag="LineEdit")
         for index, item in enumerate(head):
-            films = head_films.get(item)
-            if films is None:
+            if (films := head_films.get(item)) is None:
                 continue
-            combobox = QComboBox()
-            combobox.addItems(films)
-            combobox.setCurrentIndex(films.index(data[index]) if data else 0)
-            combobox.setMinimumSize(QSize(0, sapp.height_widgets))
+            combobox = Combobox(0, sapp.height_widgets, films, films.index(data[index]) if data else 0)
             self.gridlayout.addWidget(combobox, index, 0, 1, 2)
-        self.gridlayout.addWidget(le, 0, 0, 1, 2)
+            self.__widgets[index] = ContainerWidget(obj=combobox, tag="Combobox")
+        self.gridlayout.addWidget(lineedit, 0, 0, 1, 2)
         self.gridlayout.addWidget(self.pbOk, index, 0, alignment=Qt.AlignLeft | Qt.AlignBottom)
         self.gridlayout.addWidget(self.pbCancel, index, 1, alignment=Qt.AlignRight | Qt.AlignBottom)
+
+    def getDataAllFields(self) -> tuple | list:
+        result = []
+        for widget in self.__widgets:
+            if widget is None:
+                continue
+            elif widget.tag == "LineEdit":
+                result.append(widget.obj.text())
+            elif widget.tag == "Combobox":
+                result.append(widget.obj.currentText())
+        return result
 
 
 class UiFormAdd(UiPopupForm):
@@ -99,7 +118,7 @@ class UiFormAdd(UiPopupForm):
     def __init__(self) -> None:
         super().__init__()
         self.setWindowTitle(WN.FORM_ADD)
-        self.addWidgets()
+        self.createWidgets()
 
 
 class UiFormEdit(UiPopupForm):
@@ -131,3 +150,20 @@ class PushButton(QPushButton):
             self.setObjectName(name)
         if icon is not None:
             self.setIcon(QIcon(icon))
+
+
+class LineEdit(QLineEdit):
+    def __init__(self, width: int, height: int, text: str, placeholder: str) -> None:
+        QLineEdit.__init__(self)
+        self.setMinimumSize(QSize(width, height))
+        self.setPlaceholderText(placeholder)
+        self.setText(text)
+
+
+class Combobox(QComboBox):
+    def __init__(self, width: int, height: int, names: tuple | list = None, index: int = None) -> None:
+        QComboBox.__init__(self)
+        self.setMinimumSize(QSize(width, height))
+        if names is not None:
+            self.addItems(names)
+            self.setCurrentIndex(index)
