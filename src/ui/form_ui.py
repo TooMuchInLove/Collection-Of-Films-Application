@@ -71,7 +71,9 @@ class UiMainWidget(UiWidget):
             item = QTableWidgetItem(str(value))
             self.table.setItem(row, column, item)
             if column == 0:
-                item.setTextAlignment(Qt.AlignRight | Qt.AlignVCenter)
+                self.table.setColumnWidth(column, 400)
+            else:
+                self.table.setColumnWidth(column, 180)
 
 
 class UiPopupForm(UiWidget):
@@ -91,6 +93,7 @@ class UiPopupForm(UiWidget):
         """ Добавление виджетов на форму """
         head = list(head_films.keys())
         lineedit = LineEdit(0, sapp.height_widgets, data[0] if data else "", head[0])
+        self.gridlayout.addWidget(lineedit, 0, 0, 1, 2)
         self.__widgets[0] = ContainerWidget(obj=lineedit, tag="LineEdit")
         for index, item in enumerate(head):
             if (films := head_films.get(item)) is None:
@@ -98,11 +101,10 @@ class UiPopupForm(UiWidget):
             combobox = Combobox(0, sapp.height_widgets, films, films.index(data[index]) if data else 0)
             self.gridlayout.addWidget(combobox, index, 0, 1, 2)
             self.__widgets[index] = ContainerWidget(obj=combobox, tag="Combobox")
-        self.gridlayout.addWidget(lineedit, 0, 0, 1, 2)
         self.gridlayout.addWidget(self.pbOk, index, 0, alignment=Qt.AlignLeft | Qt.AlignBottom)
         self.gridlayout.addWidget(self.pbCancel, index, 1, alignment=Qt.AlignRight | Qt.AlignBottom)
 
-    def getDataAllFields(self) -> tuple | list:
+    def getDataFromAllFields(self) -> tuple | list:
         result = []
         for widget in self.__widgets:
             if widget is None:
