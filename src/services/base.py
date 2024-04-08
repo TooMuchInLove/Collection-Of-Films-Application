@@ -8,8 +8,9 @@ class WidgetFilm:
     """ Логика главного приложения """
     def __init__(self) -> None:
         self.__db = SQLite3DataBase()  # Подключение к БД
-        self.__max_uuid = self.__db.get_id()
-        self.__selected_data = None
+        self.__max_uuid = self.__db.get_last_id()
+        self.__count_rows = self.__db.get_count_rows()
+        self.__selected_row = self.__selected_data = None
         self.__app = UiMainWidget()  # Пользовательский интерфейс и компоненты
         self.__create_table()  # Заполняем таблицу данными
         # События нажатия на кнопки и пункты дерева
@@ -27,12 +28,10 @@ class WidgetFilm:
         self.__form.pbOk.clicked.connect(self.__event_insert_data)
         self.__form.pbCancel.clicked.connect(self.__event_close_form)
 
-    def __event_open_edit_form(self, row: int, column: int) -> None:
+    def __event_open_edit_form(self) -> None:
         """ Событие: создаём и открываем форму для редактирования записи """
         position = self.__app.pos()
-        self.__row = row
         self.__form = UiFormEdit(position.x(), position.y())
-        # self.__form.createWidgets(self.__get_select_data(self.__row, 0))
         self.__form.createWidgets(self.__selected_data)
         self.__form.pbOk.clicked.connect(self.__event_update_data)
         self.__form.pbCancel.clicked.connect(self.__event_close_form)
@@ -43,39 +42,39 @@ class WidgetFilm:
             return None
         position = self.__app.pos()
         self.__form = UiFormDelete(position.x(), position.y())
-        # self.__form.createWidgets(self.__selected_data)
+        self.__form.createWidgets(self.__selected_data)
         self.__form.pbOk.clicked.connect(self.__event_delete_data)
         self.__form.pbCancel.clicked.connect(self.__event_close_form)
 
     def __event_insert_data(self) -> None:
         """ Событие: добавление данных """
-        print(self.__max_uuid)
-        data = self.__form.getDataAllFields()
-        self.__db.save([self.__max_uuid]+data)
-        # saver([self.__max_uuid]+data, self.__db)
-        self.__app.insertRowInTable(self.__max_uuid-1, data+[self.__max_uuid])
+        data = self.__form.getDataFromAllFields()
+        self.__db.save(data)
+        self.__app.insertRowInTable(self.__count_rows, data+[self.__max_uuid])
         self.__event_close_form()
+        self.__count_rows += 1
         self.__max_uuid += 1
 
     def __event_update_data(self) -> None:
         """ Событие: обновление данных """
-        data = self.__form.getDataAllFields() + [self.__row+1]
+        uuid = int(self.__selected_data[-1])
+        data = self.__form.getDataFromAllFields() + [uuid]
         self.__db.update(data)
-        # updater(data, self.__db)
-        self.__app.updateRowInTable(self.__row, data)
+        self.__app.updateRowInTable(self.__selected_row, data)
         self.__event_close_form()
-
-    def __event_select_data(self, row: int, column: int) -> None:
-        """ Событие: выбор (выделение) данных """
-        self.__selected_data = self.__get_select_data(row, 0)
 
     def __event_delete_data(self) -> None:
         """ Событие: удаление данных """
-        if self.__selected_data is None:
-            return None
         self.__db.delete(self.__selected_data[-1])
         self.__create_table()
         self.__event_close_form()
+        self.__count_rows -= 1
+        self.__selected_data = None
+
+    def __event_select_data(self, row: int, column: int) -> None:
+        """ Событие: выбор (выделение) данных """
+        self.__selected_row = row
+        self.__selected_data = self.__get_select_data(row)
 
     def __event_close_form(self) -> None:
         """ Событие: закрытие формы """
@@ -85,7 +84,7 @@ class WidgetFilm:
         """ Создание таблицы приложения """
         self.__app.createTable(head_films.keys(), self.__db.read())
 
-    def __get_select_data(self, row: int, count: int) -> tuple:
+    def __get_select_data(self, row: int) -> tuple:
         """ Получаем все значения из выбранной строки """
         return (
             self.__app.table.model().index(row, 0).data(),
