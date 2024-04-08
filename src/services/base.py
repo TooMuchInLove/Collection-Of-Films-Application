@@ -19,14 +19,16 @@ class WidgetFilm:
 
     def __event_open_add_form(self) -> None:
         """ Событие: создаём и открываем форму для добавления записи """
-        self.__form = UiFormAdd()
+        position = self.__app.pos()
+        self.__form = UiFormAdd(position.x(), position.y())
         self.__form.pbOk.clicked.connect(self.__event_insert_data)
         self.__form.pbCancel.clicked.connect(self.__event_close_form)
 
     def __event_open_edit_form(self, row: int, column: int) -> None:
         """ Событие: создаём и открываем форму для редактирования записи """
+        position = self.__app.pos()
         self.__row = row
-        self.__form = UiFormEdit()
+        self.__form = UiFormEdit(position.x(), position.y())
         self.__form.createWidgets(self.__get_select_data(self.__row, 0))
         self.__form.pbOk.clicked.connect(self.__event_update_data)
         self.__form.pbCancel.clicked.connect(self.__event_close_form)

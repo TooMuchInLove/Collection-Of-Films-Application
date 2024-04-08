@@ -76,12 +76,13 @@ class UiMainWidget(UiWidget):
 
 class UiPopupForm(UiWidget):
     """ Набор визуальных компонентов всплывающего окна """
-    def __init__(self) -> None:
+    def __init__(self, x: int, y: int) -> None:
         super().__init__()
-        count_widgets = len(head_films.keys())
+        count_widgets: int = len(head_films.keys())
+        width: int = int(sapp.width/1.5)
+        height: int = (sapp.height_widgets+sapp.margin) * count_widgets
         self.__widgets: list[ContainerWidget | None] = [None] * count_widgets
-        self.setMinimumSize(QSize(int(sapp.width/1.5), (sapp.height_widgets+sapp.margin)*count_widgets))
-        self.setMaximumSize(QSize(int(sapp.width/1.5), (sapp.height_widgets+sapp.margin)*count_widgets))
+        self.setGeometry(x+(int(sapp.width/2))-int(width/2), y+int(height*0.2), width, height)
         self.pbOk = PushButton(sapp.height_widgets, sapp.height_widgets, icon=iapp.icon_save)
         self.pbCancel = PushButton(sapp.height_widgets, sapp.height_widgets, icon=iapp.icon_close)
         self.gridlayout = QGridLayout(self)  # Разметка виджетов приложения
@@ -115,16 +116,16 @@ class UiPopupForm(UiWidget):
 
 class UiFormAdd(UiPopupForm):
     """ Форма для добавления данных """
-    def __init__(self) -> None:
-        super().__init__()
+    def __init__(self, x: int, y: int) -> None:
+        UiPopupForm.__init__(self, x, y)
         self.setWindowTitle(WN.FORM_ADD)
         self.createWidgets()
 
 
 class UiFormEdit(UiPopupForm):
     """ Форма для редактирования данных """
-    def __init__(self) -> None:
-        super().__init__()
+    def __init__(self, x: int, y: int) -> None:
+        UiPopupForm.__init__(self, x, y)
         self.setWindowTitle(WN.FORM_EDIT)
 
 
