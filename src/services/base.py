@@ -1,6 +1,6 @@
-from src.ui import UiMainWidget, UiFormAdd, UiFormEdit
+from src.ui import UiMainWidget, UiFormAdd, UiFormEdit, UiFormDelete
 # from src.ui import UiNotification, S_ERROR, S_NOTIFICATION
-from src.storages import SQLite3DataBase, saver, reader, updater
+from src.storages import SQLite3DataBase
 from src.config import head_films
 
 
@@ -9,11 +9,14 @@ class WidgetFilm:
     def __init__(self) -> None:
         self.__db = SQLite3DataBase()  # Подключение к БД
         self.__max_uuid = self.__db.get_id()
+        self.__selected_data = None
         self.__app = UiMainWidget()  # Пользовательский интерфейс и компоненты
         self.__create_table()  # Заполняем таблицу данными
         # События нажатия на кнопки и пункты дерева
         self.__app.table.cellDoubleClicked.connect(self.__event_open_edit_form)
+        self.__app.table.cellClicked.connect(self.__event_select_data)
         self.__app.pbAdd.clicked.connect(self.__event_open_add_form)
+        self.__app.pbDel.clicked.connect(self.__event_open_del_form)
         # Запуск таймера, после установка метода .start()
         # self.__app.Timer.timeout.connect(self.__event_tick_timer)
 
@@ -29,22 +32,49 @@ class WidgetFilm:
         position = self.__app.pos()
         self.__row = row
         self.__form = UiFormEdit(position.x(), position.y())
-        self.__form.createWidgets(self.__get_select_data(self.__row, 0))
+        # self.__form.createWidgets(self.__get_select_data(self.__row, 0))
+        self.__form.createWidgets(self.__selected_data)
         self.__form.pbOk.clicked.connect(self.__event_update_data)
+        self.__form.pbCancel.clicked.connect(self.__event_close_form)
+
+    def __event_open_del_form(self) -> None:
+        """ Событие: создаём и открываем форму для подтверждения удаления данных """
+        if self.__selected_data is None:
+            return None
+        position = self.__app.pos()
+        self.__form = UiFormDelete(position.x(), position.y())
+        # self.__form.createWidgets(self.__selected_data)
+        self.__form.pbOk.clicked.connect(self.__event_delete_data)
         self.__form.pbCancel.clicked.connect(self.__event_close_form)
 
     def __event_insert_data(self) -> None:
         """ Событие: добавление данных """
+        print(self.__max_uuid)
         data = self.__form.getDataAllFields()
-        saver([self.__max_uuid]+data, self.__db)
+        self.__db.save([self.__max_uuid]+data)
+        # saver([self.__max_uuid]+data, self.__db)
         self.__app.insertRowInTable(self.__max_uuid-1, data+[self.__max_uuid])
         self.__event_close_form()
+        self.__max_uuid += 1
 
     def __event_update_data(self) -> None:
         """ Событие: обновление данных """
         data = self.__form.getDataAllFields() + [self.__row+1]
-        updater(data, self.__db)
+        self.__db.update(data)
+        # updater(data, self.__db)
         self.__app.updateRowInTable(self.__row, data)
+        self.__event_close_form()
+
+    def __event_select_data(self, row: int, column: int) -> None:
+        """ Событие: выбор (выделение) данных """
+        self.__selected_data = self.__get_select_data(row, 0)
+
+    def __event_delete_data(self) -> None:
+        """ Событие: удаление данных """
+        if self.__selected_data is None:
+            return None
+        self.__db.delete(self.__selected_data[-1])
+        self.__create_table()
         self.__event_close_form()
 
     def __event_close_form(self) -> None:
@@ -53,7 +83,7 @@ class WidgetFilm:
 
     def __create_table(self) -> None:
         """ Создание таблицы приложения """
-        self.__app.createTable(head_films.keys(), reader(self.__db))
+        self.__app.createTable(head_films.keys(), self.__db.read())
 
     def __get_select_data(self, row: int, count: int) -> tuple:
         """ Получаем все значения из выбранной строки """
@@ -65,6 +95,7 @@ class WidgetFilm:
             self.__app.table.model().index(row, 4).data(),
         )
 
+    # TODO: Обязательно допишу реализацию всплывающего окна уведомлений
     # def __event_tick_timer(self) -> None:
     #     """ Запуск таймера в приложении """
     #     self.__app.Timer.stop()

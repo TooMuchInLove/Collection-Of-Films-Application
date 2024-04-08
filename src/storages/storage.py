@@ -5,16 +5,16 @@ from src.patterns import Singleton
 
 class IStorage:
     """ Интерфейс для любого хранилища """
-    def save(self, data: list) -> None:
+    def save(self, data: tuple | list) -> None:
         pass
 
-    def read(self) -> list:
+    def read(self) -> tuple | list:
         pass
 
-    def update(self, data: list) -> None:
+    def update(self, data: tuple | list) -> None:
         pass
 
-    def delete(self) -> None:
+    def delete(self, _id: int) -> None:
         pass
 
 
@@ -49,40 +49,34 @@ class SQLite3DataBase(IStorageSQL, Singleton):
         self.connection.commit()
 
     def get_id(self) -> int:
+        """ Получение максимального ID записи в таблице """
         self.cursor.execute(Q.GET_MAX_ID)
         uuid = self.cursor.fetchone()
         if uuid is None:
             return 1
         return uuid[0] + 1
 
-    def save(self, data: list) -> None:
+    def save(self, data: tuple | list) -> None:
         """ Сохранение данных в БД """
         self.cursor.execute(Q.INSERT_FILM % (*data,))
         self.connection.commit()
 
-    def read(self) -> list:
+    def read(self) -> tuple | list:
         """ Чтение данных из БД """
         self.cursor.execute(Q.SELECT_ALL_FILMS)
         return [item for item in self.cursor.fetchall()]
 
-    def update(self, data: list) -> None:
+    def update(self, data: tuple | list) -> None:
         """ Обновляем данные в БД """
         self.cursor.execute(Q.UPDATE_FILM % (*data,))
+        self.connection.commit()
+
+    def delete(self, _id: int) -> None:
+        """ Удаление данных из БД """
+        self.cursor.execute(Q.DELETE_FILM % (_id,))
         self.connection.commit()
 
     def __del__(self) -> None:
         """ Разрываем соединение с базой """
         if self.connection is not None:
             self.connection.close()
-
-
-def saver(data: list, storage: IStorage) -> None:
-    storage.save(data)
-
-
-def reader(storage: IStorage) -> list:
-    return storage.read()
-
-
-def updater(data: list, storage: IStorage) -> None:
-    storage.update(data)

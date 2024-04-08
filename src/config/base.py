@@ -49,10 +49,11 @@ class Query:
     """ Запросы к БД SQLite """
     CREATE_TABLE_FILMS = f"CREATE TABLE IF NOT EXISTS {NAME_TABLE_FILMS} " \
                          f"(id INTEGER PRIMARY KEY, name TEXT, movie_or_series TEXT, genre TEXT, view TEXT);"
+    SELECT_ALL_FILMS = f"SELECT name, movie_or_series, genre, view, id FROM {NAME_TABLE_FILMS};"
     INSERT_FILM = f"INSERT INTO {NAME_TABLE_FILMS} (id, name, movie_or_series, genre, view) " \
                   f"VALUES (%s, '%s', '%s', '%s', '%s');"
-    SELECT_ALL_FILMS = f"SELECT name, movie_or_series, genre, view, id FROM {NAME_TABLE_FILMS};"
     UPDATE_FILM = f"UPDATE {NAME_TABLE_FILMS} SET name='%s', movie_or_series='%s', genre='%s', view='%s' WHERE id=%s;"
+    DELETE_FILM = f"DELETE FROM {NAME_TABLE_FILMS} WHERE id=%s;"
     GET_MAX_ID = f"SELECT COUNT(*) FROM {NAME_TABLE_FILMS};"
 
 
@@ -74,7 +75,7 @@ class Pallete:
     ORANGE = "#FF9C00"
     LIGHT_GREY = "#CED6E0"
     DARK_BLUE = "#283149"
-    LIGHT_BLUE = "#4C5C8A"
+    LIGHT_BLUE = "#FFFFFF"  # "#4C5C8A"
 
 
 @dataclass(slots=True, frozen=True)
@@ -83,6 +84,7 @@ class WidgetName:
     TITLE = "Collection of films"
     FORM_ADD = "Добавить запись"
     FORM_EDIT = "Редактировать запись"
+    FORM_DEL = "Удалить выбранные данные?"
     FORM_VIEW = "Просмотр данных"
 
 

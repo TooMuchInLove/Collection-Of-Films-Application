@@ -71,7 +71,7 @@ class UiMainWidget(UiWidget):
             item = QTableWidgetItem(str(value))
             self.table.setItem(row, column, item)
             if column == 0:
-                item.setTextAlignment(Qt.AlignRight)
+                item.setTextAlignment(Qt.AlignRight | Qt.AlignVCenter)
 
 
 class UiPopupForm(UiWidget):
@@ -79,7 +79,7 @@ class UiPopupForm(UiWidget):
     def __init__(self, x: int, y: int) -> None:
         super().__init__()
         count_widgets: int = len(head_films.keys())
-        width: int = int(sapp.width/1.5)
+        width: int = int(sapp.width/1.3)
         height: int = (sapp.height_widgets+sapp.margin) * count_widgets
         self.__widgets: list[ContainerWidget | None] = [None] * count_widgets
         self.setGeometry(x+(int(sapp.width/2))-int(width/2), y+int(height*0.2), width, height)
@@ -127,6 +127,14 @@ class UiFormEdit(UiPopupForm):
     def __init__(self, x: int, y: int) -> None:
         UiPopupForm.__init__(self, x, y)
         self.setWindowTitle(WN.FORM_EDIT)
+
+
+class UiFormDelete(UiPopupForm):
+    """ Форма для редактирования данных """
+    def __init__(self, x: int, y: int) -> None:
+        UiPopupForm.__init__(self, x, y)
+        self.setWindowTitle(WN.FORM_DEL)
+        self.createWidgets()
 
 
 class UiNotification(QLabel):
