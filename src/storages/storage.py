@@ -5,6 +5,7 @@ from src.patterns import Singleton
 
 class IStorage:
     """ Интерфейс для любого хранилища """
+
     def save(self, data: tuple | list) -> None:
         pass
 
@@ -20,6 +21,7 @@ class IStorage:
 
 class IStorageSQL(IStorage):
     """ Интерфейс для БД, хранящих данные в таблице (SQL) """
+
     def connect(self) -> None:
         pass
 
@@ -29,6 +31,7 @@ class IStorageSQL(IStorage):
 
 class SQLite3DataBase(IStorageSQL, Singleton):
     """ Хранилище данных в табличном формате -> база SQLite3 """
+
     def __init__(self) -> None:
         self.connection = None
         self.cursor = None
@@ -48,13 +51,19 @@ class SQLite3DataBase(IStorageSQL, Singleton):
         self.cursor.execute(Q.CREATE_TABLE_FILMS)
         self.connection.commit()
 
-    def get_id(self) -> int:
+    def get_count_rows(self) -> int:
+        """ Получение кол-ва записей в таблице """
+        self.cursor.execute(Q.GET_COUNT_ROWS)
+        if (count := self.cursor.fetchone()[0]) is None:
+            return 0
+        return count
+
+    def get_last_id(self) -> int:
         """ Получение максимального ID записи в таблице """
         self.cursor.execute(Q.GET_MAX_ID)
-        uuid = self.cursor.fetchone()
-        if uuid is None:
+        if (uuid := self.cursor.fetchone()[0]) is None:
             return 1
-        return uuid[0] + 1
+        return uuid + 1
 
     def save(self, data: tuple | list) -> None:
         """ Сохранение данных в БД """
