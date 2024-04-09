@@ -1,5 +1,4 @@
 from os import path as os_path
-from dataclasses import dataclass
 
 BACKSLASH_OS_WINDOWS = "\\"
 # Текущая и основная рабочая директория
@@ -15,81 +14,8 @@ NAME_TABLE_FILMS = "films"
 # Названия для столбцов таблицы
 head_films = {
     "Название": None,
-    "Кино/Сериал": ("Кино", "Сериал"),
+    "Кино/Сериал": ("Кино", "Сериал", "Мультфильм", "Мультсериал"),
     "Жанр": ("Комедия", "Ужасы", "Драма", "Мелодрама", "Триллер", "Приключения", "Боевик", "Фантастика"),
     "Просмотр": ("Просмотрено", "Непросмотрено"),
     "ID": None,
 }
-
-
-@dataclass(slots=True, frozen=True)
-class SettingsApplication:
-    """ Настройки окна приложения """
-    title: str = "Collection of films"  # название окна приложения
-    width: int = 1000  # ширина окна приложения
-    height_min: int = 700  # минимальная высота окна приложения
-    height_max: int = 1000  # максимальная высота окна приложения
-    height_widgets: int = 50  # высота компонентов в приложении
-    margin: int = 30  # внутренняя рамка для окна приложения
-    max_len_field: int = 100  # максимальная длина строки в поле
-
-
-@dataclass(slots=True, frozen=True)
-class ImagesApplication:
-    """ Различные лого и иконки для приложения и виджетов """
-    icon_save = f"{IMAGES_PATH}/save.png"
-    icon_add = f"{IMAGES_PATH}/add.png"
-    icon_view = f"{IMAGES_PATH}/view.png"
-    icon_delete = f"{IMAGES_PATH}/delete.png"
-    icon_close = f"{IMAGES_PATH}/close.png"
-
-
-@dataclass(slots=True)
-class Query:
-    """ Запросы к БД SQLite """
-    CREATE_TABLE_FILMS = f"CREATE TABLE IF NOT EXISTS {NAME_TABLE_FILMS} " \
-                         f"(id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, " \
-                         f"type TEXT, genre TEXT, view TEXT);"
-    SELECT_ALL_FILMS = f"SELECT name, type, genre, view, id FROM {NAME_TABLE_FILMS};"
-    INSERT_FILM = f"INSERT INTO {NAME_TABLE_FILMS} (name, type, genre, view) " \
-                  f"VALUES ('%s', '%s', '%s', '%s');"
-    UPDATE_FILM = f"UPDATE {NAME_TABLE_FILMS} SET name='%s', type='%s', genre='%s', view='%s' WHERE id=%s;"
-    DELETE_FILM = f"DELETE FROM {NAME_TABLE_FILMS} WHERE id=%s;"
-    GET_COUNT_ROWS = f"SELECT COUNT(*) FROM {NAME_TABLE_FILMS};"
-    GET_MAX_ID = f"SELECT MAX(id) FROM {NAME_TABLE_FILMS};"
-
-
-@dataclass(slots=True, frozen=True)
-class FontStyle:
-    """ Список шрифтов и их размеров """
-    CORBEL = "Corbel"
-    SIZE_1 = 1
-    SIZE_5 = 5
-    SIZE_20 = 25
-
-
-@dataclass(slots=True, frozen=True)
-class Pallete:
-    """ Цветовая палитра """
-    WHITE = "#FFFFFF"
-    BLACK = "#000000"
-    DARK_RED = "#D72323"
-    ORANGE = "#FF9C00"
-    LIGHT_GREY = "#CED6E0"
-    DARK_BLUE = "#283149"
-    LIGHT_BLUE = "#FFFFFF"  # "#4C5C8A"
-
-
-@dataclass(slots=True, frozen=True)
-class WidgetName:
-    """ Список названий виджетов приложения (и главные окна) """
-    TITLE = "Collection of films"
-    FORM_ADD = "Добавить запись"
-    FORM_EDIT = "Редактировать запись"
-    FORM_DEL = "Удалить выбранные данные?"
-    FORM_VIEW = "Просмотр данных"
-
-
-settings_app = SettingsApplication()
-
-images_app = ImagesApplication()
