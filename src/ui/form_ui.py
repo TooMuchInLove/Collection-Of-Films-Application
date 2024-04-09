@@ -24,7 +24,7 @@ class UiWidget(QWidget):
 class UiMainWidget(UiWidget):
     """ Набор визуальных компонентов главного окна """
     def __init__(self) -> None:
-        super().__init__()
+        UiWidget.__init__(self)
         # self.Timer = QTimer()
         self.setMinimumSize(QSize(sapp.width, sapp.height_min))
         self.setMaximumSize(QSize(sapp.width, sapp.height_max))
@@ -79,7 +79,7 @@ class UiMainWidget(UiWidget):
 class UiPopupForm(UiWidget):
     """ Набор визуальных компонентов всплывающего окна """
     def __init__(self, x: int, y: int) -> None:
-        super().__init__()
+        UiWidget.__init__(self)
         count_widgets: int = len(head_films.keys())
         width: int = int(sapp.width/1.3)
         height: int = (sapp.height_widgets+sapp.margin) * count_widgets
@@ -137,6 +137,13 @@ class UiFormDelete(UiPopupForm):
         UiPopupForm.__init__(self, x, y)
         self.setWindowTitle(WN.FORM_DEL)
         self.createWidgets()
+
+
+class UiFormView(UiPopupForm):
+    """ Форма для просмотра необходимых данных """
+    def __init__(self, x: int, y: int) -> None:
+        UiPopupForm.__init__(self, x, y)
+        self.setWindowTitle(WN.FORM_VIEW)
 
 
 class UiNotification(QLabel):
