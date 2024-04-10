@@ -4,17 +4,19 @@ from PyQt5.QtWidgets import (QApplication, QWidget, QGridLayout, QLabel, QLineEd
                              QPushButton, QTableWidget, QTableWidgetItem, QAbstractItemView)
 from src.ui import LIGHT_THEME
 from src.storages import ContainerWidget
-from src.config import settings_app as sapp, images_app as iapp, head_films, WidgetName as WN
+from src.config import settings_app as sapp, images_app as iapp, head_films, NamesWidgets as NW
 
 
 class UiWindow(QApplication):
     """ Класс для создания окна приложения """
+
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
 
 
 class UiWidget(QWidget):
     """ Класс общих параметров для виджетов """
+
     def __init__(self) -> None:
         super().__init__()
         self.setStyleSheet(LIGHT_THEME)
@@ -23,12 +25,13 @@ class UiWidget(QWidget):
 
 class UiMainWidget(UiWidget):
     """ Набор визуальных компонентов главного окна """
+
     def __init__(self) -> None:
         UiWidget.__init__(self)
         # self.Timer = QTimer()
         self.setMinimumSize(QSize(sapp.width, sapp.height_min))
         self.setMaximumSize(QSize(sapp.width, sapp.height_max))
-        self.setWindowTitle(WN.TITLE)
+        self.setWindowTitle(sapp.title)
         self.__setup_ui()
 
     def __setup_ui(self) -> None:
@@ -78,6 +81,7 @@ class UiMainWidget(UiWidget):
 
 class UiPopupForm(UiWidget):
     """ Набор визуальных компонентов всплывающего окна """
+
     def __init__(self, x: int, y: int) -> None:
         UiWidget.__init__(self)
         count_widgets: int = len(head_films.keys())
@@ -118,32 +122,36 @@ class UiPopupForm(UiWidget):
 
 class UiFormAdd(UiPopupForm):
     """ Форма для добавления данных """
+
     def __init__(self, x: int, y: int) -> None:
         UiPopupForm.__init__(self, x, y)
-        self.setWindowTitle(WN.FORM_ADD)
+        self.setWindowTitle(NW.FORM_ADD)
         self.createWidgets()
 
 
 class UiFormEdit(UiPopupForm):
     """ Форма для редактирования данных """
+
     def __init__(self, x: int, y: int) -> None:
         UiPopupForm.__init__(self, x, y)
-        self.setWindowTitle(WN.FORM_EDIT)
+        self.setWindowTitle(NW.FORM_EDIT)
 
 
 class UiFormDelete(UiPopupForm):
     """ Форма для редактирования данных """
+
     def __init__(self, x: int, y: int) -> None:
         UiPopupForm.__init__(self, x, y)
-        self.setWindowTitle(WN.FORM_DEL)
+        self.setWindowTitle(NW.FORM_DEL)
         self.createWidgets()
 
 
 class UiFormView(UiPopupForm):
     """ Форма для просмотра необходимых данных """
+
     def __init__(self, x: int, y: int) -> None:
         UiPopupForm.__init__(self, x, y)
-        self.setWindowTitle(WN.FORM_VIEW)
+        self.setWindowTitle(NW.FORM_VIEW)
 
 
 class UiNotification(QLabel):

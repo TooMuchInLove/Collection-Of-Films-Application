@@ -6,16 +6,16 @@ from src.patterns import Singleton
 class IStorage:
     """ Интерфейс для любого хранилища """
 
-    def save(self, data: tuple | list) -> None:
+    def save(self, query: str) -> None:
         pass
 
-    def read(self) -> tuple | list:
+    def read(self, query: str) -> tuple | list:
         pass
 
-    def update(self, data: tuple | list) -> None:
+    def update(self, query: str) -> None:
         pass
 
-    def delete(self, _id: int) -> None:
+    def delete(self, query: str) -> None:
         pass
 
 
@@ -33,8 +33,7 @@ class SQLite3DataBase(IStorageSQL, Singleton):
     """ Хранилище данных в табличном формате -> база SQLite3 """
 
     def __init__(self) -> None:
-        self.connection = None
-        self.cursor = None
+        self.connection = self.cursor = None
         self.connect()
         self.create_table()
 
@@ -65,24 +64,24 @@ class SQLite3DataBase(IStorageSQL, Singleton):
             return 1
         return uuid + 1
 
-    def save(self, data: tuple | list) -> None:
+    def save(self, query: str) -> None:
         """ Сохранение данных в БД """
-        self.cursor.execute(Q.INSERT_FILM % (*data,))
+        self.cursor.execute(query)
         self.connection.commit()
 
-    def read(self) -> tuple | list:
+    def read(self, query: str) -> tuple | list:
         """ Чтение данных из БД """
-        self.cursor.execute(Q.SELECT_ALL_FILMS)
+        self.cursor.execute(query)
         return [item for item in self.cursor.fetchall()]
 
-    def update(self, data: tuple | list) -> None:
+    def update(self, query: str) -> None:
         """ Обновляем данные в БД """
-        self.cursor.execute(Q.UPDATE_FILM % (*data,))
+        self.cursor.execute(query)
         self.connection.commit()
 
-    def delete(self, _id: int) -> None:
+    def delete(self, query: str) -> None:
         """ Удаление данных из БД """
-        self.cursor.execute(Q.DELETE_FILM % (_id,))
+        self.cursor.execute(query)
         self.connection.commit()
 
     def __del__(self) -> None:

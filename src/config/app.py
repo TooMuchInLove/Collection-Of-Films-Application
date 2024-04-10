@@ -25,9 +25,8 @@ class ImagesApplication:
 
 
 @dataclass(slots=True, frozen=True)
-class WidgetName:
-    """ Список названий виджетов приложения (и главные окна) """
-    TITLE = "Collection of films"
+class NamesWidgets:
+    """ Список названий виджетов приложения """
     FORM_ADD = "Добавить запись"
     FORM_EDIT = "Редактировать запись"
     FORM_DEL = "Удалить выбранные данные?"

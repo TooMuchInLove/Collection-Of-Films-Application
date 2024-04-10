@@ -8,6 +8,7 @@ class Query:
     CREATE_TABLE_FILMS = f"CREATE TABLE IF NOT EXISTS {NAME_TABLE_FILMS} (id INTEGER PRIMARY KEY AUTOINCREMENT, " \
                          f"name TEXT, type TEXT, genre TEXT, view TEXT);"
     SELECT_ALL_FILMS = f"SELECT name, type, genre, view, id FROM {NAME_TABLE_FILMS};"
+    SELECT_FILM_NAMES = f"SELECT name FROM {NAME_TABLE_FILMS};"
     INSERT_FILM = f"INSERT INTO {NAME_TABLE_FILMS} (name, type, genre, view) " \
                   f"VALUES ('%s', '%s', '%s', '%s');"
     UPDATE_FILM = f"UPDATE {NAME_TABLE_FILMS} SET name='%s', type='%s', genre='%s', view='%s' WHERE id=%s;"
