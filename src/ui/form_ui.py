@@ -42,11 +42,13 @@ class UiMainWidget(UiWidget):
         self.pbAdd = PushButton(sapp.height_widgets, sapp.height_widgets, icon=iapp.icon_add)
         self.pbDel = PushButton(sapp.height_widgets, sapp.height_widgets, icon=iapp.icon_delete)
         self.pbView = PushButton(sapp.height_widgets, sapp.height_widgets, icon=iapp.icon_view)
+        self.leSearch = LineEdit(0, sapp.height_widgets, "", "поиск")
         self.gridlayout = QGridLayout(self)  # Разметка виджетов приложения
-        self.gridlayout.addWidget(self.pbAdd, 1, 0, alignment=Qt.AlignLeft | Qt.AlignTop)
-        self.gridlayout.addWidget(self.pbDel, 1, 1, alignment=Qt.AlignLeft | Qt.AlignTop)
-        self.gridlayout.addWidget(self.pbView, 1, 2, alignment=Qt.AlignLeft | Qt.AlignTop)
         self.gridlayout.addWidget(self.table, 0, 0, 1, 3)
+        self.gridlayout.addWidget(self.pbAdd, 1, 0, alignment=Qt.AlignLeft | Qt.AlignTop)
+        self.gridlayout.addWidget(self.pbDel, 1, 0, alignment=Qt.AlignCenter | Qt.AlignTop)
+        self.gridlayout.addWidget(self.pbView, 1, 0, alignment=Qt.AlignRight | Qt.AlignTop)
+        self.gridlayout.addWidget(self.leSearch, 1, 1, 1, 2)
         # self.lbNotification = QLabel(self)  # Лэйбл для отображения ошибок или уведомлений
         # self.lbNotification.setGeometry(QRect(5, sapp.height_min-(sapp.height_widgets*2+5), sapp.width-10, sapp.height_widgets*2))
         # self.lbNotification.setVisible(False)

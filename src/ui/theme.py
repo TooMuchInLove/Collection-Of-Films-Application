@@ -23,6 +23,14 @@ QWidget {{\n
     color: {PL.DARK_BLUE};\n
 }}\n
 
+QHeaderView::section {{\n
+    background-color: {PL.LIGHT_GREY};\n
+}}\n
+
+QTableWidget QTableCornerButton::section {{\n
+    background-color: {PL.LIGHT_GREY};\n
+}}\n
+
 QPushButton {{\n
     background: {PL.LIGHT_BLUE};\n
     color: {PL.WHITE};\n
